@@ -103,5 +103,6 @@ def load_data():
 
     # データの読み込み
     video = cv2.VideoCapture(color_path)
-    depth_frames = np.load(depth_file)
-    return video, depth_frames
+    depth_frames = np.load(depth_path)
+    depth_frames = depth_frames[depth_frames.files[0]]
+    return video, depth_frames, frequency

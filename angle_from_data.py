@@ -15,21 +15,10 @@ import json
 
 if __name__ == "__main__":
 
-    # json fileの読み込み部分
-    args = sys.argv
-    json_path = args[1]
-    dir = os.path.split(os.path.abspath(json_path))[0]
-    with open(json_path) as f:
-        config = json.load(f)
-        print(config)
-    color_path = os.path.join(dir, config["color_file"])
-    depth_path = os.path.join(dir, config["depth_file"])
-    frequency = config["frequency"]
+    flag1 = False
+    counter1 = 0
 
-    # データの読み込み
-    video = cv2.VideoCapture(color_path)
-    depth_frames = np.load(depth_path)
-    depth_frames = depth_frames[depth_frames.files[0]]
+    video, depth_frames, frequency = util_elbow.load_data()
     frame_count = 0
     angles = []
 
@@ -70,7 +59,14 @@ if __name__ == "__main__":
                 world_XYZ = util_elbow.pixel_to_world_XYZ(
                     intr, xy, depth_frame)
                 angle_deg = util_elbow.calculate_angle(world_XYZ)
-                angles.append(angle_deg)
+                if flag1:
+                    if angle_deg <= angles[-1] + 45 and angle_deg >= angles[-1] - 45:
+                        angles.append(angle_deg)
+                else:
+                    angles.append(angle_deg)
+                counter1 += 1
+                if counter1 >= 5:
+                    flag1 = True
                 cv2.putText(canvas, f"min: {int(min(angles))} deg",
                             (410, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0),
                             1, cv2.LINE_AA)
