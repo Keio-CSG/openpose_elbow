@@ -59,7 +59,8 @@ if __name__ == "__main__":
                     intr, xy, depth_frame)
                 angle_deg = util_elbow.calculate_angle(world_XYZ)
                 if flag1:
-                    if angle_deg <= angles[-1] + 45 and angle_deg >= angles[-1] - 45:
+                    previous_angle = (angles[-1] + angles[-2]) / 2
+                    if angle_deg <= previous_angle + 45 and angle_deg >= previous_angle - 45:
                         angles.append(angle_deg)
                 else:
                     angles.append(angle_deg)
