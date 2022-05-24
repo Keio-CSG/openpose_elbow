@@ -15,12 +15,11 @@ import json
 
 if __name__ == "__main__":
 
-    flag1 = False
-    counter1 = 0
-
-    video, depth_frames, frequency = util_elbow.load_data()
+    # 変数類の定義
     frame_count = 0
     angles = []
+    flag1 = False
+    counter1 = 0
 
     past_frame_time = time.time()
     sec_per_frame = 1.0 / frequency
@@ -36,7 +35,8 @@ if __name__ == "__main__":
     intr.model = rs.pyrealsense2.distortion.brown_conrady
     intr.coeffs = [0.0, 0.0, 0.0, 0.0, 0.0]
 
-    # モデルの読み込みとpyrealsense2の各種設定
+    # モデルの読み込みとデータの取得
+    video, depth_frames, frequency = util_elbow.load_data()
     body_estimation = Body('model/body_pose_model.pth')
 
     # ループ部　推定を含む
