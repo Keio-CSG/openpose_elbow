@@ -14,6 +14,9 @@ import json
 #INPUT_FILE_NAME = "image.png"
 
 if __name__ == "__main__":
+    # モデルの読み込みとデータの取得
+    video, depth_frames, frequency = util_elbow.load_data()
+    body_estimation = Body('model/body_pose_model.pth')
 
     # 変数類の定義
     frame_count = 0
@@ -34,10 +37,6 @@ if __name__ == "__main__":
     intr.fy = 318.4465637207031
     intr.model = rs.pyrealsense2.distortion.brown_conrady
     intr.coeffs = [0.0, 0.0, 0.0, 0.0, 0.0]
-
-    # モデルの読み込みとデータの取得
-    video, depth_frames, frequency = util_elbow.load_data()
-    body_estimation = Body('model/body_pose_model.pth')
 
     # ループ部　推定を含む
     try:
