@@ -1,6 +1,9 @@
 import numpy as np
 import cv2
 import pyrealsense2 as rs
+import sys
+import os
+import json
 
 
 def get_arm_index(subset, left=False):
@@ -15,10 +18,11 @@ def get_arm_index(subset, left=False):
             for j in range(p_num):
                 ind[j][i-2] = int(subset[j][i])
     for i in range(p_num):
-        if len(ind[i]) >= 1:
-            if -1 in ind[i]:
-                del ind[i]
-
+        if i == 0:
+            correction_i = 0
+        if -1 in ind[i-correction_i]:
+            del ind[i-correction_i]
+            correction_i += 1
     return ind
 
 
@@ -71,8 +75,33 @@ def draw_armpose(canvas, xy):
               [170, 0, 255], [255, 0, 255], [255, 0, 170], [255, 0, 85]]
 
     p_num = len(xy)
-    for i in range(p_num):
+    # 0番目の人(推定してる人のみの点を表示)
+    for j in range(3):
+        x, y = xy[0][j][0:2]
+        cv2.circle(canvas, (int(x), int(y)), 4, colors[j+2], thickness=-1)
+    return canvas
+
+
+    # 複数人数の点も描画
+""" for i in range(p_num):
         for j in range(3):
             x, y = xy[i][j][0:2]
-            cv2.circle(canvas, (int(x), int(y)), 4, colors[j+2], thickness=-1)
-    return canvas
+            cv2.circle(canvas, (int(x), int(y)), 4, colors[j+2], thickness=-1) """
+
+
+def load_data():
+    # json fileの読み込み部分
+    args = sys.argv
+    json_path = args[1]
+    dir = os.path.split(os.path.abspath(json_path))[0]
+    with open(json_path) as f:
+        config = json.load(f)
+        print(config)
+    color_path = os.path.join(dir, config["color_file"])
+    depth_path = os.path.join(dir, config["depth_file"])
+    frequency = config["frequency"]
+
+    # データの読み込み
+    video = cv2.VideoCapture(color_path)
+    depth_frames = np.load(depth_file)
+    return video, depth_frames

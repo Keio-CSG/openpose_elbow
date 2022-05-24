@@ -26,11 +26,8 @@ if __name__ == "__main__":
     align_to = rs.stream.color
     align = rs.align(align_to)
 
-    cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
-
     try:
-        while(True):
-            #ret, frame = cap.read()
+        while True:
             frames = pipeline.wait_for_frames()
             aligned_frames = align.process(frames)
 
