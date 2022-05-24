@@ -7,6 +7,9 @@ import json
 
 
 def get_arm_index(subset, left=False):
+    """
+    openposeのsubsetを基に腕の座標indexを取得する
+    """
     p_num = len(subset)
     ind = [[0]*3 for _ in range(p_num)]
     if not left:
@@ -27,6 +30,9 @@ def get_arm_index(subset, left=False):
 
 
 def get_xy(index, candidate):
+    """
+    openposeのcandidateから腕の3点のxy座標を取得する
+    """
     p_num = len(index)
     xy_list = [[[-1]*2 for _ in range(3)] for _ in range(p_num)]
     for i in range(p_num):
@@ -36,6 +42,9 @@ def get_xy(index, candidate):
 
 
 def pixel_to_world_XYZ(intrinsics, xy_list, depth_image):
+    """
+    カメラの座標系から現実世界のXYZ座標に変換する
+    """
     p_num = len(xy_list)
     world_XYZ_list = [[[-1]*3 for _ in range(3)] for _ in range(p_num)]
 
@@ -49,6 +58,9 @@ def pixel_to_world_XYZ(intrinsics, xy_list, depth_image):
 
 
 def calculate_angle(world_XYZ):
+    """
+    3次元座標から角度を算出する
+    """
     p_shoulder = np.array(world_XYZ[0][0])
     p_elbow = np.array(world_XYZ[0][1])
     p_wrist = np.array(world_XYZ[0][2])
@@ -64,6 +76,9 @@ def calculate_angle(world_XYZ):
 
 
 def draw_armpose(canvas, xy):
+    """
+    腕の位置にポイントを描画
+    """
     stickwidth = 4
     limbSeq = [[2, 3], [2, 6], [3, 4], [4, 5], [6, 7], [7, 8], [2, 9], [9, 10],
                [10, 11], [2, 12], [12, 13], [13, 14], [2, 1], [1, 15], [15, 17],
@@ -90,6 +105,9 @@ def draw_armpose(canvas, xy):
 
 
 def load_data():
+    """
+    各種ファイルからデータを取得する
+    """
     # json fileの読み込み部分
     args = sys.argv
     json_path = args[1]
