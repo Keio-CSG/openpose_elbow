@@ -15,7 +15,7 @@ import json
 
 if __name__ == "__main__":
     # モデルの読み込みとデータの取得
-    video, depth_frames, frequency = util_elbow.load_data()
+    video, depth_frames, frequency, json_path = util_elbow.load_data()
     body_estimation = Body('model/body_pose_model.pth')
 
     # 変数類の定義
@@ -88,5 +88,10 @@ if __name__ == "__main__":
                 cv2.destroyAllWindows()
                 break
     finally:
-        print(int(min(angles)), int(max(angles)))
+        os.system("cls")
+        print("Completed")
+        print("------------------------------------")
+        print(json_path)
+        print(f"min:{int(min(angles))}")
+        print(f"max:{int(max(angles))}")
         video.release()

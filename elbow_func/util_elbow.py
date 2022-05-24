@@ -123,4 +123,4 @@ def load_data():
     video = cv2.VideoCapture(color_path)
     depth_frames = np.load(depth_path)
     depth_frames = depth_frames[depth_frames.files[0]]
-    return video, depth_frames, frequency
+    return video, depth_frames, frequency, json_path
