@@ -9,6 +9,7 @@ import copy
 import time
 import sys
 import json
+import csv
 
 
 #INPUT_FILE_NAME = "image.png"
@@ -21,8 +22,12 @@ if __name__ == "__main__":
     # 変数類の定義
     frame_count = 0
     angles = []
+    angles_csv = []
+    shoulder_list = []
+    elbow_list = []
+    wrist_list = []
     flag1 = False
-    counter1 = 0
+    counter1 = 1
 
     past_frame_time = time.time()
     sec_per_frame = 1.0 / frequency
@@ -57,7 +62,20 @@ if __name__ == "__main__":
             if len(xy) >= 1:
                 world_XYZ = util_elbow.pixel_to_world_XYZ(
                     intr, xy, depth_frame)
+
+                # CSV用listの生成
+                shoulder_list.append(world_XYZ[0][0][0:3])
+                shoulder_list[-1].insert(0, counter1)
+                shoulder_list[-1].insert(1, "shoulder")
+                elbow_list.append(world_XYZ[0][1][0:3])
+                elbow_list[-1].insert(0, counter1)
+                elbow_list[-1].insert(1, "elbow")
+                wrist_list.append(world_XYZ[0][2][0:3])
+                wrist_list[-1].insert(0, counter1)
+                wrist_list[-1].insert(1, "wrist")
+
                 angle_deg = util_elbow.calculate_angle(world_XYZ)
+                angles_csv.append([counter1, angle_deg])
                 if flag1:
                     previous_angle = (angles[-1] + angles[-2]) / 2
                     if angle_deg <= previous_angle + 45 and angle_deg >= previous_angle - 45:
@@ -65,7 +83,7 @@ if __name__ == "__main__":
                 else:
                     angles.append(angle_deg)
                 counter1 += 1
-                if counter1 >= 5:
+                if counter1 >= 6:
                     flag1 = True
                 cv2.putText(canvas, f"min: {int(min(angles))} deg",
                             (410, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0),
@@ -88,6 +106,23 @@ if __name__ == "__main__":
                 cv2.destroyAllWindows()
                 break
     finally:
+        print(os.path.exists("./results/{json_name}"))
+        json_name = json_path
+        json_name = json_name.replace("./side/", "")
+        json_name = json_name.replace(".json", "")
+        if not os.path.exists(f"./results/{json_name}"):
+            os.mkdir(f"./results/{json_name}")
+        with open(f"./results/{json_name}/XYZ.csv", "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["frame", "part", "X", "Y", "Z"])
+            writer.writerows(shoulder_list)
+            writer.writerows(elbow_list)
+            writer.writerows(wrist_list)
+        with open(f"./results/{json_name}/angles.csv", "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["frame", "angle"])
+            writer.writerows(angles_csv)
+
         os.system("cls")
         print("Completed")
         print("------------------------------------")
