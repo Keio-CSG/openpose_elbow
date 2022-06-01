@@ -110,6 +110,9 @@ if __name__ == "__main__":
         json_name = json_path
         json_name = json_name.replace("./side/", "")
         json_name = json_name.replace(".json", "")
+
+        if not os.path.exists(f"./results"):
+            os.mkdir(f"./results")
         if not os.path.exists(f"./results/{json_name}"):
             os.mkdir(f"./results/{json_name}")
         with open(f"./results/{json_name}/XYZ.csv", "w", newline="") as f:
