@@ -10,6 +10,7 @@ import time
 import sys
 import json
 import csv
+import math
 
 
 #INPUT_FILE_NAME = "image.png"
@@ -91,9 +92,10 @@ if __name__ == "__main__":
                 cv2.putText(canvas, f"max: {int(max(angles))} deg",
                             (410, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0),
                             1, cv2.LINE_AA)
-                cv2.putText(canvas, f"{int(angle_deg)} degree",
-                            (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0),
-                            1, cv2.LINE_AA)
+                if not math.isnan(angle_deg):
+                    cv2.putText(canvas, f"{int(angle_deg)} degree",
+                                (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0),
+                                1, cv2.LINE_AA)
             cv2.imshow("frame", canvas)
 
             k = cv2.waitKey(1)
@@ -106,27 +108,24 @@ if __name__ == "__main__":
                 cv2.destroyAllWindows()
                 break
     finally:
-        print(os.path.exists("./results/{json_name}"))
-        json_name = json_path
-        json_name = json_name.replace("./side/", "")
-        json_name = json_name.replace(".json", "")
+        json_name = os.path.splitext(os.path.basename(json_path))[0]
 
         if not os.path.exists(f"./results"):
             os.mkdir(f"./results")
-        if not os.path.exists(f"./results/{json_name}"):
-            os.mkdir(f"./results/{json_name}")
-        with open(f"./results/{json_name}/XYZ.csv", "w", newline="") as f:
+        if not os.path.exists(f"./results/{json_name}_openpose"):
+            os.mkdir(f"./results/{json_name}_openpose")
+        with open(f"./results/{json_name}_openpose/XYZ.csv", "w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(["frame", "part", "X", "Y", "Z"])
             writer.writerows(shoulder_list)
             writer.writerows(elbow_list)
             writer.writerows(wrist_list)
-        with open(f"./results/{json_name}/angles.csv", "w", newline="") as f:
+        with open(f"./results/{json_name}_openpose/angles.csv", "w", newline="") as f:
             writer = csv.writer(f)
             writer.writerow(["frame", "angle"])
             writer.writerows(angles_csv)
 
-        os.system("cls")
+        # os.system("cls")
         print("Completed")
         print("------------------------------------")
         print(json_path)
