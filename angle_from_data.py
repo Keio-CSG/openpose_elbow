@@ -44,6 +44,7 @@ if __name__ == "__main__":
     intr.model = rs.pyrealsense2.distortion.brown_conrady
     intr.coeffs = [0.0, 0.0, 0.0, 0.0, 0.0]
 
+    start_time = time.time()
     # ループ部　推定を含む
     try:
         while True:
@@ -108,6 +109,7 @@ if __name__ == "__main__":
                 cv2.destroyAllWindows()
                 break
     finally:
+        end_time = time.time()
         json_name = os.path.splitext(os.path.basename(json_path))[0]
 
         if not os.path.exists(f"./results"):
@@ -125,10 +127,12 @@ if __name__ == "__main__":
             writer.writerow(["frame", "angle"])
             writer.writerows(angles_csv)
 
-        # os.system("cls")
+        os.system("cls")
+        measurement_time = end_time - start_time
         print("Completed")
         print("------------------------------------")
         print(json_path)
         print(f"min:{int(min(angles))}")
         print(f"max:{int(max(angles))}")
+        print(f"time:{measurement_time}")
         video.release()
