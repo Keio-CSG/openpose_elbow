@@ -114,7 +114,7 @@ def load_data():
     dir = os.path.split(os.path.abspath(json_path))[0]
     with open(json_path) as f:
         config = json.load(f)
-        print(config)
+        # print(config)
     color_path = os.path.join(dir, config["color_file"])
     depth_path = os.path.join(dir, config["depth_file"])
     frequency = config["frequency"]
