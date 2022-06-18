@@ -91,9 +91,10 @@ def draw_armpose(canvas, xy):
 
     p_num = len(xy)
     # 0番目の人(推定してる人のみの点を表示)
-    for j in range(3):
-        x, y = xy[0][j][0:2]
-        cv2.circle(canvas, (int(x), int(y)), 4, colors[j+2], thickness=-1)
+    if p_num >= 1:
+        for j in range(3):
+            x, y = xy[0][j][0:2]
+            cv2.circle(canvas, (int(x), int(y)), 4, colors[j+2], thickness=-1)
     return canvas
 
 
