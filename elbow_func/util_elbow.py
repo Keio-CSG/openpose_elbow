@@ -133,6 +133,16 @@ def load_data():
 def elbow_distance_change_analysis(XYZ_file_path, angles_file_path, fluctuation=50):
     """
     csvファイルから肘の角度が±fluctuationまで変化した時の角度の変動をプロットし、最大・最小値等を表示する
+
+    Parameters:
+    ----------
+    XYZ_file_path : str
+        Estimated coordinate file path
+    angles_file_path : str
+        Estimated angles file path
+
+    fluctuation : int
+        Fluctuation range
     """
     XYZ = pd.read_csv(XYZ_file_path)
     angles = pd.read_csv(angles_file_path)
