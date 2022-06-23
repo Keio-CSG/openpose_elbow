@@ -1,9 +1,13 @@
 import numpy as np
-import cv2
+import pandas as pd
 import pyrealsense2 as rs
+import cv2
 import sys
 import os
 import json
+import copy
+
+import matplotlib.pyplot as plt
 
 
 def get_arm_index(subset, left=False):
@@ -97,7 +101,6 @@ def draw_armpose(canvas, xy):
             cv2.circle(canvas, (int(x), int(y)), 4, colors[j+2], thickness=-1)
     return canvas
 
-
     # 複数人数の点も描画
 """ for i in range(p_num):
         for j in range(3):
@@ -125,3 +128,41 @@ def load_data():
     depth_frames = np.load(depth_path)
     depth_frames = depth_frames[depth_frames.files[0]]
     return video, depth_frames, frequency, json_path
+
+
+def elbow_distance_change_analysis(XYZ_file_path, angles_file_path, fluctuation=50):
+    """
+    csvファイルから肘の角度が±fluctuationまで変化した時の角度の変動をプロットし、最大・最小値等を表示する
+    """
+    XYZ = pd.read_csv(XYZ_file_path)
+    angles = pd.read_csv(angles_file_path)
+
+    # anglesから角度が最小、最大のframeを取得
+    min_frame = angles.iat[angles.idxmin()["angle"], 0]
+    max_frame = angles.iat[angles.idxmax()["angle"], 0]
+    XYZ_min = XYZ[XYZ["frame"] == min_frame]
+    XYZ_max = XYZ[XYZ["frame"] == max_frame]
+    l_min = XYZ_min.values.tolist()
+    l_max = XYZ_max.values.tolist()
+    l = [l_min, l_max]
+    m = ["min", "max"]
+    for i in range(2):
+        print(m[i])
+        world_XYZ = [[]]
+        angle_list = [[], []]
+        for j in range(3):
+            world_XYZ[0].append(l[i][j][2:5])
+        for j in range(-(fluctuation), fluctuation + 1):
+            new_world_XYZ = copy.deepcopy(world_XYZ)
+            new_world_XYZ[0][1][2] = world_XYZ[0][1][2] + j
+            result1 = calculate_angle(new_world_XYZ)
+            angle_list[0].append(new_world_XYZ[0][1][2])
+            angle_list[1].append(result1)
+        plt.plot(angle_list[0], angle_list[1])
+        plt.axvline(x=world_XYZ[0][1][2])
+        plt.show()
+
+        print(min(angle_list[1]), max(angle_list[1]), calculate_angle(
+            world_XYZ), world_XYZ[0][1][2])
+        print(
+            "-----------------------------------------------------------------------------")
