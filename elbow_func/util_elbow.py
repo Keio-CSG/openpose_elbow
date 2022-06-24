@@ -79,6 +79,28 @@ def calculate_angle(world_XYZ):
     return angle_deg
 
 
+def calculate_angle_360(world_XYZ):
+    """
+    3次元座標から360度で角度を算出する
+    """
+    p_shoulder = np.array(world_XYZ[0][0])
+    p_elbow = np.array(world_XYZ[0][1])
+    p_wrist = np.array(world_XYZ[0][2])
+    upperarm = p_shoulder - p_elbow
+    forearm = p_wrist - p_elbow
+    cross = np.cross(upperarm, forearm)
+
+    length_vec_upperarm = np.linalg.norm(upperarm)
+    length_vec_forearm = np.linalg.norm(forearm)
+    inner_product = np.inner(upperarm, forearm)
+    angle_rad = np.arccos(
+        inner_product / (length_vec_upperarm * length_vec_forearm))
+    angle_deg = np.rad2deg(angle_rad)
+    if cross[2] < 0:
+        angle_deg = 360 - angle_deg
+    return angle_deg
+
+
 def draw_armpose(canvas, xy):
     """
     腕の位置にポイントを描画
@@ -100,6 +122,7 @@ def draw_armpose(canvas, xy):
             x, y = xy[0][j][0:2]
             cv2.circle(canvas, (int(x), int(y)), 4, colors[j+2], thickness=-1)
     return canvas
+
 
     # 複数人数の点も描画
 """ for i in range(p_num):
@@ -165,7 +188,7 @@ def elbow_distance_change_analysis(XYZ_file_path, angles_file_path, fluctuation=
         for j in range(-(fluctuation), fluctuation + 1):
             new_world_XYZ = copy.deepcopy(world_XYZ)
             new_world_XYZ[0][1][2] = world_XYZ[0][1][2] + j
-            result1 = calculate_angle(new_world_XYZ)
+            result1 = calculate_angle_360(new_world_XYZ)
             angle_list[0].append(new_world_XYZ[0][1][2])
             angle_list[1].append(result1)
         plt.plot(angle_list[0], angle_list[1])
