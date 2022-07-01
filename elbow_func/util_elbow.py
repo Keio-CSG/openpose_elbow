@@ -124,6 +124,7 @@ def draw_armpose(canvas, xy):
             x, y = xy[0][j][0:2]
             points.append((x, y))
             cv2.circle(canvas, (int(x), int(y)), 4, colors[j+2], thickness=-1)
+    # 線分の描画
         for i in range(2):
             cv2.line(canvas, (int(points[i][0]), int(points[i][1])), (int(
                 points[i+1][0]), int(points[i+1][1])), (0, 0, 0), thickness=1)
