@@ -105,6 +105,8 @@ def draw_armpose(canvas, xy):
     """
     腕の位置にポイントを描画
     """
+    points = []
+
     stickwidth = 4
     limbSeq = [[2, 3], [2, 6], [3, 4], [4, 5], [6, 7], [7, 8], [2, 9], [9, 10],
                [10, 11], [2, 12], [12, 13], [13, 14], [2, 1], [1, 15], [15, 17],
@@ -120,9 +122,13 @@ def draw_armpose(canvas, xy):
     if p_num >= 1:
         for j in range(3):
             x, y = xy[0][j][0:2]
+            points.append((x, y))
             cv2.circle(canvas, (int(x), int(y)), 4, colors[j+2], thickness=-1)
-    return canvas
+        for i in range(2):
+            cv2.line(canvas, (int(points[i][0]), int(points[i][1])), (int(
+                points[i+1][0]), int(points[i+1][1])), (0, 0, 0), thickness=1)
 
+    return canvas
 
     # 複数人数の点も描画
 """ for i in range(p_num):
